@@ -7,6 +7,24 @@ module.exports = {
   method: 'GET',
   path: '/users',
   config: {
+    tags: ['api'],
+      description: 'Get all the user',
+      notes: 'Returns a list of all user, must be logged as admin',
+
+  plugins: {
+            'hapi-swagger': {
+              security: [{ 'token': [] }],
+                responses: {
+                    '400': {
+                        description: 'BadRequest'
+                    },
+                    '200':{ 
+                      description: 'Success'
+                    }
+                },
+                payloadType: 'form'
+            }
+        },
     handler: (req, res) => {
       User
         .find()
@@ -19,7 +37,7 @@ module.exports = {
           if (!users.length) {
             throw Boom.notFound('No users found!');
           }
-          return res(users);
+          return res(users).header('Authorization', request.headers.authorization);
         })
     },
     // Add authentication to this route
@@ -27,7 +45,7 @@ module.exports = {
     auth: {
       strategy: 'token',
       scope: ['admin']
-
-    }
+    },
+  
   }
 }

@@ -14,6 +14,23 @@ module.exports = {
     pre: [
       { method: verifyCredentials, assign: 'user' }
     ],
+    tags: ['api'],
+      description: 'Log as user',
+      notes: 'Returns a token id with jwt',
+
+  plugins: {
+            'hapi-swagger': {
+                responses: {
+                    '400': {
+                        description: 'BadRequest'
+                    },
+                    '200':{ 
+                      description: 'Success'
+                    }
+                },
+                payloadType: 'form'
+            }
+        },
     handler: (req, res) => {
       // If the user's password is correct, we can issue a token.
       // If it was incorrect, the error will bubble up from the pre method
