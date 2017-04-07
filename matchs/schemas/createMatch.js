@@ -13,7 +13,7 @@ const createMatchSchema = Joi.object({
 
             //heure: Joi.string().required(),
         
-            limite: Joi.number().integer().optional().description('the number of milliseconds since 1970/01/01 to the beginning of match'),
+            //limite: Joi.number().integer().optional().description('the number of milliseconds since 1970/01/01 to the beginning of match'),
 
             score_dom: Joi.number().integer().optional(),
 

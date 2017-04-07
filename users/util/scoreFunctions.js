@@ -1,8 +1,8 @@
 'use strict';
 
-const Bet = require('./bets/model/Bet');
-const Match = require('./matchs/model/Match');
-const User = require('./users/model/User');
+const Bet = require('../../bets/model/Bet');
+const Match = require('../../matchs/model/Match');
+const User = require('../../users/model/User');
 
 // getMatch
 // 
@@ -85,29 +85,36 @@ function betWinnerIsMatchWinner(match, bet) {
 
   return ((DomWins && betOnDom) ||
         (tie && betTie) ||
-        (!DomWins && !betOnDom && !tie && !betTie));
+        (!DomWins && !betOnDom && !tie && !betTie));//if Exterior wins and user bet on exterior and not on tie
 }
 
-// computeScoreDifference
+
+
+function goodWinnerandOneScore(match, bet) {
+  betWinnerIsMatchWinner(match, bet);
+
+  var resultDom = match.scoreDom- bet.scoreDom ;
+  var resultExt = match.scoreExt - bet.scoreExt;
+
+  return (ResultDom == 0 || ResultExt == 0);
+
+}
+
+//perfectBet
 //
-// @description :: return the difference between bet team score and match team score
-// @param       :: teamName (required): the name of the team
-//                 match (required): the match instance
+// @description :: return true if has bet on the good score for the 2 teams
+// @param       :: match (required): the match instance
 //                 bet (require): the bet concerned
-function computeScoreDifference(teamName, match, bet) {
-  /*if(!match.hasOwnProperty('scoreTeam' + teamName) ||
-    !bet.hasOwnProperty('scoreTeam' + teamName)) {
-      //sails.log.error('ScoreCalculator.computeScoreDifference("' + teamName + '", ...)');
-      //sails.log.error('first parameter is incorrect');
-      throw new Error('This team doesn\'t exist');
-  }*/
+function perfectBet(match, bet) {
+  
+  var resultDom = match.scoreDom- bet.scoreDom ;
+  var resultExt = match.scoreExt - bet.scoreExt;
 
-  var scoreDifference = match['scoreTeam' + teamName] - bet['scoreTeam' + teamName];
-  if(scoreDifference < 0)
-    scoreDifference = (- scoreDifference);
+  return (ResultDom == ResultExt  == 0);
 
-  return scoreDifference;
+
 }
+    
 
 // computeBetScore
 //
@@ -119,19 +126,21 @@ function computeBetScore(match, bet) {
   var score = 0;
 
   // 1. 
-  if(betWinnerIsMatchWinner(match, bet)) {
-    score += points.betWinnerIsMatchWinner;
+  if(perfectBet(match, bet)) {
+    score = 6;
+  }
+  //2
+  else if(goodWinnerandOneScore(match, bet)){
+    score = 4;
+  }
+  //3
+  else if(betWinnerIsMatchWinner(match, bet)){
+    score = 2;
   }
 
-  // 2.
-  var scoreDifference = 0;
-  var factor = 0;
-  _.each(['A', 'B'], function (teamName) {
-    scoreDifference = computeScoreDifference(teamName, match, bet);
-    //factor = (1 / (scoreDifference + 1));
-    //score += factor * sails.config.FriendsBet.score.maximumPerTeamScoreDifference;
-  });
+  return score;
 }
+
 
 // updateBetScore
 // 
@@ -140,10 +149,10 @@ function computeBetScore(match, bet) {
 //                 bet (required): the single bet concerned
 //                 cb (required): the function called when it's done or an
 //                 error occured
-function updateBetScore(match, bet, cb) {
+function updateBetScore(match, bet) {
+
   bet.score = computeBetScore(match, bet);
 
-  bet.save(cb);
 }
 
 // increaseUserScore
@@ -153,10 +162,9 @@ function updateBetScore(match, bet, cb) {
 //                 betScore (required): the single bet score value
 //                 cb (required): the function called when it's done or an
 //                 error occured
-function increaseUserScore(user, betScore, cb) {
-  user.score += betScore;
+function increaseUserScore(user, match, bet) {
+  user.points += updateBetScore(match,bet, cb);
 
-  user.save(cb);
 }
 
 function updateUserScoreFromBet(userId, betScore, cb) {
@@ -212,3 +220,6 @@ function updateUserScoreFromBet(userId, betScore, cb) {
     ], cb);
    }
 
+
+module.exports.updateBetScore = updateBetScore;
+module.exports.increaseUserScore = increaseUserScore;

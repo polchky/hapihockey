@@ -2,14 +2,25 @@
 
 const User = require('../model/User');
 const Boom = require('boom');
+const Joi = require('joi');
 
 module.exports = {
   method: 'GET',
-  path: '/users',
+  path: '/users/{id}',
   config: {
     tags: ['api'],
-      description: 'Get all the user',
-      notes: 'Returns a list of all user, must be logged as admin',
+      description: 'Get one user',
+      notes: 'Returns the information of the user logged',
+
+      validate: {
+    params: {
+
+          id : Joi.objectId()
+                  .required()
+                  .description('the ID of the user to fetch')
+
+        }
+      },
 
   plugins: {
             'hapi-swagger': {
@@ -27,15 +38,12 @@ module.exports = {
         },
     handler: (req, res) => {
       User
-        .find()
+        .findById(req.params.id)
         // Deselect the password and version fields
         .select('-password -__v')
         .exec((err, users) => {
           if (err) {
             throw Boom.badRequest(err);
-          }
-          if (!users.length) {
-            throw Boom.notFound('No users found!');
           }
           return res(users);
         })

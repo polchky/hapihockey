@@ -8,6 +8,7 @@ const authenticateUserSchema = //Joi.alternatives().try(
     username: Joi.string().alphanum().min(2).max(30).required(),
     password: Joi.string().required()
   });
+  //Swagger can not handle alternartives
   /*Joi.object({
     email: Joi.string().email().required(),
     password: Joi.string().required()

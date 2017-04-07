@@ -7,14 +7,14 @@ const Bet = require('../controller/bet');
 
 module.exports = ([
 
-    //{ method: 'GET', path: '/match', config: Match.getAll},
+    { method: 'GET', path: '/bets', config: Bet.getAll},
     
-    { method: 'POST', path: '/bet', config:  Bet.create }, 
+    { method: 'POST', path: '/bets', config:  Bet.create }, 
 
-    //{ method: 'GET', path: '/match/{id}', config: Match.getOne}, 
+    { method: 'GET', path: '/bets/{bet_id}', config: Bet.getOne}, 
   
-    //{ method: 'PUT', path: '/match/{id}', config: Match.update}, 
+    { method: 'PUT', path: '/bets/{bet_id}', config: Bet.update}, 
 
-    //{ method: 'DELETE', path: '/match/{id}', config: Match.remove}, 
+    { method: 'DELETE', path: '/bets/{bet_id}', config: Bet.remove}, 
 
   ]);

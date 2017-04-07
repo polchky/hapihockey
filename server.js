@@ -59,7 +59,8 @@ function validate(req, decoded, callback) {
     const credentials = (decoded.tokenData);
     //var decoded = jwt.decode(token);
     console.log(credentials.scope);
-  if (credentials.scope !== 'admin') {
+  //verify if the user is an admin or if his id corresponds to the id in the request
+  if (credentials.scope !== 'admin' && credentials.id !== req.params.id) {
         return callback(null, false);
     }
 
@@ -106,3 +107,5 @@ server.start((err) => {
     }
   });
 });
+
+module.exports = server;

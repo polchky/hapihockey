@@ -7,14 +7,16 @@ const Match = require('../controller/match');
 
 module.exports = ([
 
-    { method: 'GET', path: '/match', config: Match.getAll},
+    { method: 'GET', path: '/matchs', config: Match.getAll},
     
-    { method: 'POST', path: '/match', config:  Match.create }, 
+    { method: 'POST', path: '/matchs', config:  Match.create }, 
 
-    { method: 'GET', path: '/match/{id}', config: Match.getOne}, 
+    { method: 'GET', path: '/matchs/{id}', config: Match.getOne}, 
+
+    { method: 'GET', path: '/matchs/{id}/bets', config: Match.getBet},
   
-    { method: 'PUT', path: '/match/{id}', config: Match.update}, 
+    { method: 'PUT', path: '/matchs/{id}', config: Match.update}, 
 
-    { method: 'DELETE', path: '/match/{id}', config: Match.remove}, 
+    { method: 'DELETE', path: '/matchs/{id}', config: Match.remove}, 
 
   ]);

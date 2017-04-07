@@ -10,13 +10,9 @@ const updateMatchSchema = Joi.object({
 
             exterieur: Joi.string().optional(),
 
-            heure: Joi.string().optional(),
-        
-            limite: Joi.number().integer().optional(),
+            scoreDom: Joi.number().integer().optional(),
 
-            score_dom: Joi.number().integer().optional(),
-
-            score_ext: Joi.number().integer().optional()
+            scoreExt: Joi.number().integer().optional()
 
             });
 

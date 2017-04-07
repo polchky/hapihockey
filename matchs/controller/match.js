@@ -34,7 +34,8 @@ exports.getAll = {
       ,
 
   handler: function (request, reply) {
-    Match.find({}, function (err, match) {
+    
+    Match.find({"limite": {$gt:  today}}, function (err, match) {
       if (!err) {
         return reply(match);
       }
@@ -85,6 +86,61 @@ exports.getOne = {
   }
 };
 
+exports.getBet = {
+tags: ['api'],
+      description: 'Get the bets for the match id',
+      notes: 'Returns the all the bets of one match',
+
+
+      validate:{
+          params: {
+
+          id : Joi.objectId()
+                  .required()
+                  .description('the ID of the match to fetch')
+
+        }
+      },
+  plugins: {
+            'hapi-swagger': {
+              //security: [{ 'token': [] }],
+                responses: {
+                    '400': {
+                        description: 'BadRequest'
+                    },
+                    '200':{ 
+                      description: 'Success'
+                    }
+                },
+                payloadType: 'form'
+            }
+        },
+    handler: (req, res) => {
+      Match
+        .findById(req.params.id/*,function (err, user) {
+      /*if (!err) {
+        return res(user);
+      }
+      return reply(Boom.badImplementation(err)); // 500 error
+    }*/)
+        .select('-limite -__v')
+        .populate('bets')
+        .exec(function(err, bets){
+            if(!err) {
+        return res(bets);
+      }
+    return res(Boom.badImplementation(err)); // 500 error
+});   
+        
+    },
+    // Add authentication to this route
+    // The user must have a scope of `admin`
+   /* auth: {
+      strategy: 'token',
+      //scope: ['admin']
+    },*/
+};
+
 exports.create = {
   tags: ['api'],
       description: 'Create a match',
@@ -122,14 +178,14 @@ exports.create = {
   },
   auth: {
       strategy: 'token',
-      scope :["admin"]
+      //scope :["admin"]
 
     }
 };
 
 exports.update = {
   tags: ['api'],
-      description: 'Update a match',
+      description: 'Update a match by its ID',
       notes: 'Update a match document in the DB',
 
   plugins: {
@@ -146,10 +202,17 @@ exports.update = {
             }
         },
   validate: {
-    payload: updateMatchSchema
+    payload: updateMatchSchema,
+    params: {
+
+          id : Joi.objectId()
+                  .required()
+                  .description('the ID of the match to fetch')
+
+        }
   },
   handler: function (request, reply) {
-    Match.findOneAndUpdate({ '_id': request.params.id }, request.payload, function (err, match) {
+    Match.findByIdAndUpdate(request.params.id , request.payload, function (err, match) {
       if (!err) {
             return reply(match); // HTTP 201
       
@@ -158,13 +221,28 @@ exports.update = {
         return reply(Boom.badImplementation(err)); // 500 error
       }
     });
-  }
+  },
+  auth: {
+      strategy: 'token',
+      //scope :["admin"]
+
+    }
 };
 
 exports.remove = {
   tags: ['api'],
-      description: 'Create a match',
-      notes: 'Insert a match item in the DB',
+      description: 'Remove a match',
+      notes: 'Delete a match item in the DB',
+
+      validate: {
+    params: {
+
+          id : Joi.objectId()
+                  .required()
+                  .description('the ID of the match to fetch')
+
+        }
+  },
 
   plugins: {
             'hapi-swagger': {
@@ -180,16 +258,22 @@ exports.remove = {
             }
         },
   handler: function (request, reply) {
-    Match.findOneAndRemove({ '_id': request.params.id }, function (err, match) {
+    Match.findByIdAndRemove(request.params.id , function (err, match) {
       if (!err && match) {
+        match.remove();
         return reply({ message: "Match deleted successfully"});
       }
       if (!err) {
         return reply(Boom.notFound()); //HTTP 404
       }
-      return reply(Boom.badRequest("Could not delete user"));
+      return reply(Boom.badRequest("Could not delete match"));
     });
-  }
+  },
+  auth: {
+      strategy: 'token',
+      //scope :["admin"]
+
+    }
 };
 
 exports.removeAll = {
@@ -198,7 +282,7 @@ exports.removeAll = {
       if (!err) {
         return reply({ message: "Match database successfully deleted"});
       }
-      return reply(Boom.badRequest("Could not delete match"));
+      return reply(Boom.badRequest("Could not delete match database"));
     });
   }
 };
