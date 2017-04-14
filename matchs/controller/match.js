@@ -77,7 +77,7 @@ exports.getOne = {
 
       },
   handler: function (request, reply) {
-    Match.findOne({ '_id': request.params.id }, function (err, match) {
+    Match.findById(request.params.id , function (err, match) {
       if (!err) {
         return reply(match);
       }
@@ -117,14 +117,9 @@ tags: ['api'],
         },
     handler: (req, res) => {
       Match
-        .findById(req.params.id/*,function (err, user) {
-      /*if (!err) {
-        return res(user);
-      }
-      return reply(Boom.badImplementation(err)); // 500 error
-    }*/)
-        .select('-limite -__v')
-        .populate('bets')
+        .findById(req.params.id)
+        .select('-_id domicile exterieur bets')
+        .populate({path: 'bets', select: '-__v'})
         .exec(function(err, bets){
             if(!err) {
         return res(bets);
@@ -135,10 +130,10 @@ tags: ['api'],
     },
     // Add authentication to this route
     // The user must have a scope of `admin`
-   /* auth: {
+    auth: {
       strategy: 'token',
       //scope: ['admin']
-    },*/
+    },
 };
 
 exports.create = {

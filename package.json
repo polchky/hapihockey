@@ -4,11 +4,12 @@
   "description": "",
   "main": "server.js",
   "dependencies": {
+    "bcrypt": "^1.0.2",
+    "better-console": "^1.0.0",
     "boom": "^4.2.0",
     "glob": "^7.1.1",
     "hapi": "^16.1.0",
     "hapi-auth-jwt": "^4.0.0",
-    "hapi-auth-jwt-request": "^1.0.1",
     "hapi-swagger": "^7.7.0",
     "inert": "^4.1.0",
     "joi": "^10.2.2",

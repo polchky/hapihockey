@@ -2,7 +2,7 @@
 
 const Bet = require('../model/Bet');
 const Match = require('../../matchs/model/Match');
-const createBetSchema = require('../schemas/createBet');
+//const createBetSchema = require('../schemas/createBet');
 const updateBetSchema = require('../schemas/updateBet');
 const Boom = require('boom');
 const User = require('../../users/model/User');
@@ -51,7 +51,7 @@ exports.getAll = {
   
 };
 
-exports.create = {
+/*exports.create = {
     tags: ['api'],
       description: 'Create a bet',
       notes: 'Insert a bet document in the DB',
@@ -71,7 +71,7 @@ exports.create = {
             }
         },
     validate: {
-    payload: createBetSchema
+    payload: createBetSchema,
   },
   handler: function (request, reply) {
       const today = new Date().getTime();
@@ -119,11 +119,11 @@ exports.create = {
         
   },
   // Add authentication to this route
-    auth: {
+    /*auth: {
       strategy: 'token'
      // scope: ['admin']
     },
-};
+};*/
 
 exports.getOne = {
 
@@ -215,7 +215,7 @@ params: {
 exports.remove = {
   tags: ['api'],
       description: 'Delete a bet',
-      notes: 'Remove a match item from the DB',
+      notes: 'Remove a bet item from the DB',
 
       validate: {
     params: {
@@ -241,7 +241,7 @@ exports.remove = {
             }
         },
   handler: function (request, reply) {
-    Bet.findByIdAndRemove(request.params.id , function (err, bet) {
+    Bet.findByIdAndRemove(request.params.bet_id , function (err, bet) {
       if (!err && bet) {
         return reply({ message: "Bet deleted successfully"});
       }

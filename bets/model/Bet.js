@@ -10,7 +10,7 @@ const betModel = new Schema({
   scoreExt: { type: Number, min:0, required: true },
   score: { type: Number, min:0, defaultsTo:0 },
   match: { type: Schema.Types.ObjectId, ref: 'Match', notEmpty: true, required: true }, // It's a reference to the Match object
-  user: { type: Schema.Types.ObjectId, ref:'User', notEmpty: true, required: true  },  // The User who's done the Bet
+  user: { type: Schema.Types.ObjectId, ref:'User', notEmpty: true, required: true},  // The User who's done the Bet
   vainqueur: { type: String}
 });
 

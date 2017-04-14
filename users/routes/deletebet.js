@@ -2,31 +2,32 @@
 
 const User = require('../model/User');
 const Bet = require('../../bets/model/Bet');
+const Match = require('../../matchs/model/Match');
+const createBetSchema = require('../schemas/createBet');
 const Boom = require('boom');
 const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi);
 
 module.exports = {
-  method: 'GET',
+  method: 'DELETE',
   path: '/users/{id}/bets',
   config: {
     tags: ['api'],
-      description: 'Get the bets for the user id',
-      notes: 'Returns the all the bets of one user',
+      description: 'Delete a bet',
+      notes: 'Remove a bet item from the DB',
 
+      validate: {
+    params: {
 
-      validate:{
-          params: {
-
-          id : Joi.objectId()
+          bet_id : Joi.objectId()
                   .required()
-                  .description('the ID of the user to fetch')
+                  .description('the ID of the user which deletes his bet')
 
         }
-      },
+  },
+
   plugins: {
             'hapi-swagger': {
-              
                 responses: {
                     '400': {
                         description: 'BadRequest'
@@ -38,24 +39,21 @@ module.exports = {
                 payloadType: 'form'
             }
         },
-    handler: (req, res) => {
-      Bet
-        .find({"user": req.params.id})
-        .select('-password -user -admin -__v')
-        .populate({path: 'match', select: 'domicile exterieur date'})
-        .exec(function(err, bets){
-            if(!err) {
-        return res(bets);
+  handler: function (request, reply) {
+    Bet.findByIdAndRemove(request.params.bet_id , function (err, bet) {
+      if (!err && bet) {
+        return reply({ message: "Bet deleted successfully"});
       }
-    return res(Boom.badImplementation(err)); // 500 error
-});   
-        
-    },
+      if (!err) {
+        return reply(Boom.notFound()); //HTTP 404
+      }
+      return reply(Boom.badRequest("Could not delete bet"));
+    });
+  },
     // Add authentication to this route
     // The user must have a scope of `admin`
     auth: {
       strategy: 'token'
-      //scope: ['admin']
     },
   
   }

@@ -5,7 +5,7 @@ const Joi = require('joi');
 //const limite = new Date(dateString);
 
 const createMatchSchema = Joi.object({
-            date: Joi.string().required().description('the date of the match'),
+            date: Joi.string().required().description('ex: April 4, 2017 20:15:09'),
 
             domicile: Joi.string().required().description('the domicile team'),
 
