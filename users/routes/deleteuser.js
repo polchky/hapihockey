@@ -48,12 +48,6 @@ module.exports = {
       return res(Boom.badRequest("Could not delete user"));
     });
     },
-    // Add authentication to this route
-    // The user must have a scope of `admin`
-    auth: {
-      strategy: 'token'
-      //scope: ['admin']
-    },
   
   }
 }

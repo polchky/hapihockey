@@ -9,12 +9,12 @@ module.exports = ([
 
     { method: 'GET', path: '/bets', config: Bet.getAll},
     
-    //{ method: 'POST', path: '/bets', config:  Bet.create }, 
+    { method: 'POST', path: '/bets', config:  Bet.create }, 
 
-    //{ method: 'GET', path: '/bets/{bet_id}', config: Bet.getOne}, 
+    { method: 'GET', path: '/bets/{bet_id}', config: Bet.getOne}, 
   
-    //{ method: 'PUT', path: '/bets/{bet_id}', config: Bet.update}, 
+    { method: 'PUT', path: '/bets/{bet_id}', config: Bet.update}, 
 
-    //{ method: 'DELETE', path: '/bets/{bet_id}', config: Bet.remove}, 
+    { method: 'DELETE', path: '/bets/{bet_id}', config: Bet.remove}, 
 
   ]);

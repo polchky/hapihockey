@@ -25,7 +25,7 @@ exports.getAll = {
                     '400': {
                         description: 'BadRequest'
                     },
-                    '404': {
+                    '404':{
                         description: 'NotFound'
                     }
                    
@@ -45,15 +45,9 @@ exports.getAll = {
       if(!bet.length){
           return reply(Boom.notFound('There are no bets')) //404 error
       }
-      return reply(bet);
+      return reply(bet); 
     })
   },
-    // Add authentication to this route
-    // The user must have a scope of `admin`
-    auth: {
-      strategy: 'token',
-      scope: ['admin']
-    }
   
 };
 
@@ -64,7 +58,7 @@ exports.create = {
 
   plugins: {
             'hapi-swagger': {
-                //security: [{ 'token': [] }],
+
                 responses: {
                     '400': {
                         description: 'BadRequest'
@@ -124,11 +118,6 @@ exports.create = {
     );
         
   },
-  // Add authentication to this route
-      auth: {
-      strategy: 'token'
-     // scope: ['admin']
-    },
 };
 
 exports.getOne = {

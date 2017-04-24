@@ -11,7 +11,7 @@ const updateBetSchema = Joi.object({
 
             scoreExt: Joi.number().integer().required(),
 
-            //points: Joi.number().integer().optional(),
+            //score : Joi.number().integer().optional(),
 
             //match: Joi.objectId(),
 

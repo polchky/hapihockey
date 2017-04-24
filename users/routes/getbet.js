@@ -26,7 +26,7 @@ module.exports = {
       },
   plugins: {
             'hapi-swagger': {
-              
+
                 responses: {
                     '400': {
                         description: 'BadRequest'
@@ -39,7 +39,7 @@ module.exports = {
             }
         },
     handler: (req, res) => {
-      Bet
+        Bet
         .find({"user": req.params.id})
         .select('-password -user -admin -__v')
         .populate({path: 'match', select: 'domicile exterieur date'})
@@ -50,14 +50,7 @@ module.exports = {
     return res(Boom.badImplementation(err)); // 500 error
 });   
         
-    },
-    // Add authentication to this route
-    // The user must have a scope of `admin`
-    auth: {
-      strategy: 'token'
-      //scope: ['admin']
-    },
-  
+    },  
   }
 }
 

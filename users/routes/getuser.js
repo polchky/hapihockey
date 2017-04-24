@@ -18,11 +18,11 @@ module.exports = {
                     '400': {
                         description: 'BadRequest'
                     },
-                    '404':{
-                        description: 'NotFound'
-                    },
                     '200':{ 
                       description: 'Success'
+                    },
+                    '404':{
+                      description: 'NotFound'
                     }
                 },
                 payloadType: 'form'
@@ -43,11 +43,6 @@ module.exports = {
           }
           return res(users);
         })
-    },
-    // Add authentication to this route
-    // The user must have a scope of `admin`
-    auth: {
-      strategy: 'token'
     },
   
   }

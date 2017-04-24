@@ -43,7 +43,7 @@ module.exports = {
         },
     handler: (req, res) => {
 
-        User
+      User
         .findById(req.params.id)
         // Deselect the bets and version fields
         .select('-__v -bets')
@@ -55,10 +55,6 @@ module.exports = {
           return res(users);
         });
     },
-  // Add authentication to this route
-    // The user must have a scope of `admin`
-    auth: {
-      strategy: 'token'
-    }
+  
   }
 }

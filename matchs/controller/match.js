@@ -5,17 +5,17 @@ const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi);
 const Boom = require('boom');
 const Match = require('../model/Match');
+const Bet = require('../../bets/model/Bet');
 const mongoose = require('mongoose');
 const createMatchSchema = require('../schemas/createMatch');
 const updateMatchSchema = require('../schemas/updateMatch');
 const today = new Date().getTime();
 
 exports.getAll = {
-  //if(limite-today>0) Todo: return all the non ended matchs
 
   tags: ['api'],
       description: 'Get the match list',
-      notes: 'Returns all the match item that are not yet finished',
+      notes: 'Returns all the match items that are not yet finished',
 
   plugins: {
             'hapi-swagger': {
@@ -43,10 +43,10 @@ exports.getAll = {
          .exec(function (err, match) {
       
         if (err) {
-            return reply(Boom.badRequest(err)); //400 error
+            return reply(Boom.badRequest(err))  ;
           }
           if (!match.length) {
-            return reply(Boom.notFound('All the matchs are finished, you can not bet on them!')); //404 error
+            return reply(Boom.notFound('All the matchs are finished, you can not bet on them!'));
           }
           return reply(match);
     });
@@ -98,7 +98,7 @@ exports.getOne = {
 exports.getBet = {
 tags: ['api'],
       description: 'Get the bets for the match id',
-      notes: 'Returns the all the bets of one match',
+      notes: 'Returns all the bets of one match',
 
 
       validate:{
@@ -112,7 +112,7 @@ tags: ['api'],
       },
   plugins: {
             'hapi-swagger': {
-              //security: [{ 'token': [] }],
+
                 responses: {
                     '400': {
                         description: 'BadRequest'
@@ -136,12 +136,6 @@ tags: ['api'],
     return res(Boom.badImplementation(err)); // 500 error
 });   
         
-    },
-    // Add authentication to this route
-    // The user must have a scope of `admin`
-    auth: {
-      strategy: 'token',
-      //scope: ['admin']
     },
 };
 
@@ -178,13 +172,7 @@ exports.create = {
     });
     console.log(datelimite);
     
-    //match.update(match.limite, datelimite);
-  },
-  auth: {
-      strategy: 'token',
-      //scope :["admin"]
-
-    }
+  }
 };
 
 exports.update = {
@@ -218,19 +206,15 @@ exports.update = {
   handler: function (request, reply) {
     Match.findByIdAndUpdate(request.params.id , request.payload, function (err, match) {
       if (!err) {
-            return reply(match); // HTTP 201
+
+             return reply('The changes were successfully added'); // HTTP 200
       
       }
       else{ 
         return reply(Boom.badImplementation(err)); // 500 error
       }
     });
-  },
-  auth: {
-      strategy: 'token',
-      //scope :["admin"]
-
-    }
+  }
 };
 
 exports.remove = {
@@ -272,12 +256,7 @@ exports.remove = {
       }
       return reply(Boom.badRequest("Could not delete match"));
     });
-  },
-  auth: {
-      strategy: 'token',
-      //scope :["admin"]
-
-    }
+  }
 };
 
 exports.removeAll = {
