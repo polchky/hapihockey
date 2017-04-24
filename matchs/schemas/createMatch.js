@@ -15,9 +15,9 @@ const createMatchSchema = Joi.object({
         
             //limite: Joi.number().integer().optional().description('the number of milliseconds since 1970/01/01 to the beginning of match'),
 
-            score_dom: Joi.number().integer().optional(),
+            //score_dom: Joi.number().integer().optional(),
 
-            score_ext: Joi.number().integer().optional()
+            //score_ext: Joi.number().integer().optional()
 });
 
 module.exports = createMatchSchema;

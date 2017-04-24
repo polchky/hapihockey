@@ -15,7 +15,7 @@ exports.getAll = {
 
   tags: ['api'],
       description: 'Get the match list',
-      notes: 'Returns all the match item',
+      notes: 'Returns all the match item that are not yet finished',
 
   plugins: {
             'hapi-swagger': {
@@ -23,8 +23,11 @@ exports.getAll = {
                    '200':{ 
                       description: 'List of matchs'
                     },
-                    '400': {
-                        description: 'BadRequest'
+                    '404': {
+                        description: 'NotFound'
+                    },
+                    '400':{
+                      description: 'BadRequest'
                     }
                    
                 },
@@ -35,11 +38,17 @@ exports.getAll = {
 
   handler: function (request, reply) {
     
-    Match.find({"limite": {$gt:  today}}, function (err, match) {
-      if (!err) {
-        return reply(match);
-      }
-      return reply(Boom.badImplementation(err)); // 500 error
+    Match.find({"limite": {$gt:  today}})
+         .select('-__v -limite') 
+         .exec(function (err, match) {
+      
+        if (err) {
+            return reply(Boom.badRequest(err)); //400 error
+          }
+          if (!match.length) {
+            return reply(Boom.notFound('All the matchs are finished, you can not bet on them!')); //404 error
+          }
+          return reply(match);
     });
   },
   

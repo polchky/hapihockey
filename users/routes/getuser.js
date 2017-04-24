@@ -18,6 +18,9 @@ module.exports = {
                     '400': {
                         description: 'BadRequest'
                     },
+                    '404':{
+                        description: 'NotFound'
+                    },
                     '200':{ 
                       description: 'Success'
                     }
@@ -26,16 +29,17 @@ module.exports = {
             }
         },
     handler: (req, res) => {
+
       User
         .find()
-        // Deselect the password and version fields
-        .select('-password -__v')
+        // Deselect the version field
+        .select('-__v')
         .exec((err, users) => {
           if (err) {
-            throw Boom.badRequest(err);
+            return res(Boom.badRequest(err)); //400 error
           }
           if (!users.length) {
-            throw Boom.notFound('No users found!');
+            return res(Boom.notFound('No users found!')); //404 error
           }
           return res(users);
         })
@@ -43,8 +47,7 @@ module.exports = {
     // Add authentication to this route
     // The user must have a scope of `admin`
     auth: {
-      strategy: 'token',
-      //scope: ['admin']
+      strategy: 'token'
     },
   
   }

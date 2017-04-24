@@ -2,7 +2,7 @@
 
 const Bet = require('../model/Bet');
 const Match = require('../../matchs/model/Match');
-//const createBetSchema = require('../schemas/createBet');
+const createBetSchema = require('../schemas/createBet');
 const updateBetSchema = require('../schemas/updateBet');
 const Boom = require('boom');
 const User = require('../../users/model/User');
@@ -24,6 +24,9 @@ exports.getAll = {
                     },
                     '400': {
                         description: 'BadRequest'
+                    },
+                    '404': {
+                        description: 'NotFound'
                     }
                    
                 },
@@ -36,10 +39,13 @@ exports.getAll = {
     Bet.find()
         .select('-__v ')
         .exec(function (err, bet) {
-      if (!err) {
-        return reply(bet);
+      if (err) {
+        return reply(Boom.badRequest(err)); //400 error
       }
-      return reply(Boom.badImplementation(err)); // 500 error
+      if(!bet.length){
+          return reply(Boom.notFound('There are no bets')) //404 error
+      }
+      return reply(bet);
     })
   },
     // Add authentication to this route
@@ -51,7 +57,7 @@ exports.getAll = {
   
 };
 
-/*exports.create = {
+exports.create = {
     tags: ['api'],
       description: 'Create a bet',
       notes: 'Insert a bet document in the DB',
@@ -119,11 +125,11 @@ exports.getAll = {
         
   },
   // Add authentication to this route
-    /*auth: {
+      auth: {
       strategy: 'token'
      // scope: ['admin']
     },
-};*/
+};
 
 exports.getOne = {
 
@@ -200,7 +206,7 @@ params: {
   handler: function (request, reply) {
     Bet.findByIdAndUpdate(request.params.bet_id , request.payload, function (err, bet) {
       if (!err) {
-            return reply(bet); // HTTP 201
+            return reply('The changes were successfully added'); // HTTP 200
       
       }
       else{ 
