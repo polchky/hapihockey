@@ -1,13 +1,13 @@
 'use strict';
 
 const User = require('../model/User');
+const Bet = require('../../bets/model/Bet');
 const Boom = require('boom');
 const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi);
 const console = require('better-console');
 
-const updateBetScore = require('../util/scoreFunctions').updateBetScore;
-const increaseUserScore = require('../util/scoreFunctions').increaseUserScore;
+var computeBetScore = require('../util/scoreFunctions').computeBetScore;
 
 module.exports = {
   method: 'GET',
@@ -100,11 +100,9 @@ module.exports = {
         
     },
     // Add authentication to this route
-    // The user must have a scope of `admin`
-   /* auth: {
-      strategy: 'token',
-      //scope: ['admin']
-    },*/
+    auth: {
+      strategy: 'token'
+    },
   
   }
 }

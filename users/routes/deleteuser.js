@@ -42,8 +42,8 @@ module.exports = {
         //match.remove();
         return res({ message: "User deleted successfully"});
       }
-      if (!err) {
-        return res(Boom.notFound()); //HTTP 404
+      if (!user) {
+        return res(Boom.notFound('The user does not exist!')); //error 404
       }
       return res(Boom.badRequest("Could not delete user"));
     });

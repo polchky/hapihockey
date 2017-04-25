@@ -33,6 +33,9 @@ module.exports = {
                     },
                     '200':{ 
                       description: 'Success'
+                    },
+                    '404':{
+                      description: 'NotFound'
                     }
                 },
                 payloadType: 'form'
@@ -44,10 +47,15 @@ module.exports = {
         .select('-password -user -admin -__v')
         .populate({path: 'match', select: 'domicile exterieur date'})
         .exec(function(err, bets){
-            if(!err) {
-        return res(bets);
+            if(err) {
+        return res(Boom.badRequest(err)); // 400 error
       }
-    return res(Boom.badImplementation(err)); // 500 error
+            if(!bets.length){
+
+              return res(Boom.notFound('The user has no bets'))
+            }
+
+            return res(bets);
 });   
         
     },

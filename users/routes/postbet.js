@@ -3,7 +3,7 @@
 const User = require('../model/User');
 const Bet = require('../../bets/model/Bet');
 const Match = require('../../matchs/model/Match');
-const createBetSchema = require('../schemas/createBet');
+const createBetSchema = require('../../bets/schemas/createBet');
 const Boom = require('boom');
 const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi);
@@ -31,7 +31,7 @@ module.exports = {
       },
   plugins: {
             'hapi-swagger': {
-              //security: [{ 'token': [] }],
+             
                 responses: {
                     '400': {
                         description: 'BadRequest'
@@ -89,10 +89,8 @@ module.exports = {
         
     },
     // Add authentication to this route
-    // The user must have a scope of `admin`
     auth: {
       strategy: 'token'
-      //scope: ['admin']
     },
   
   }

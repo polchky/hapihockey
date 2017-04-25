@@ -3,7 +3,6 @@
 const User = require('../model/User');
 const Bet = require('../../bets/model/Bet');
 const Match = require('../../matchs/model/Match');
-const createBetSchema = require('../schemas/createBet');
 const Boom = require('boom');
 const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi);
@@ -19,10 +18,16 @@ module.exports = {
       validate: {
     params: {
 
-          bet_id : Joi.objectId()
+          id : Joi.objectId()
                   .required()
-                  .description('the ID of the user which deletes his bet')
+                  .description('ID of the user which deletes his bet')
 
+        },
+
+        payload:{
+          bet : Joi.objectId()
+                      .required()
+                      .description('ID of the bet')
         }
   },
 
@@ -34,20 +39,23 @@ module.exports = {
                     },
                     '200':{ 
                       description: 'Success'
+                    },
+                    '404':{
+                      description: 'NotFound'
                     }
                 },
                 payloadType: 'form'
             }
         },
   handler: function (request, reply) {
-    Bet.findByIdAndRemove(request.params.bet_id , function (err, bet) {
+    Bet.findByIdAndRemove(request.payload.bet , function (err, bet) {
       if (!err && bet) {
-        return reply({ message: "Bet deleted successfully"});
+        return reply({ message: "Bet deleted successfully"}); //HTTP 200
       }
-      if (!err) {
-        return reply(Boom.notFound()); //HTTP 404
+      if (!bet) {
+        return reply(Boom.notFound()); //404 error
       }
-      return reply(Boom.badRequest("Could not delete bet"));
+      return reply(Boom.badRequest("Could not delete bet")); //400 error
     });
   },
     // Add authentication to this route

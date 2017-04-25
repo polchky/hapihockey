@@ -3,7 +3,6 @@
 const User = require('../model/User');
 const Bet = require('../../bets/model/Bet');
 const Match = require('../../matchs/model/Match');
-const createBetSchema = require('../schemas/createBet');
 const updateBetSchema = require('../../bets/schemas/updateBet');
 const Boom = require('boom');
 const Joi = require('joi');
@@ -25,6 +24,9 @@ module.exports = {
                     },
                     '200':{ 
                       description: 'Success'
+                    },
+                    '404':{
+                      description: 'NotFound'
                     }
                 },
                 payloadType: 'form'
@@ -35,21 +37,24 @@ module.exports = {
 
 params: {
 
-          bet_id : Joi.objectId()
+          id : Joi.objectId()
                   .required()
-                  .description('the ID of the BET to fetch')
+                  .description('the ID of the user which modify his bet')
 
         }
 
   },
   handler: function (request, reply) {
-    Bet.findByIdAndUpdate(request.params.bet_id , request.payload, function (err, bet) {
-      if (!err) {
-            return reply(bet); // HTTP 201
+    Bet.findByIdAndUpdate(request.payload.bet , request.payload, function (err, bet) {
+      if (err) {
+            return reply(Boom.badRequest(err));
       
       }
+      if(!bet){
+            return reply(Boom.notFound('The bet you want to update does not exist'))
+      }
       else{ 
-        return reply(Boom.badImplementation(err)); // 500 error
+        return reply('The changes were successfully added'); // HTTP 200
       }
     });
     

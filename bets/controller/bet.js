@@ -51,8 +51,7 @@ exports.getAll = {
     // Add authentication to this route
     // The user must have a scope of `admin`
     auth: {
-      strategy: 'token',
-      scope: ['admin']
+      strategy: 'token'
     }
   
 };

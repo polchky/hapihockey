@@ -5,6 +5,7 @@ const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi);
 const Boom = require('boom');
 const Match = require('../model/Match');
+const Bet = require('../../bets/model/Bet');
 const mongoose = require('mongoose');
 const createMatchSchema = require('../schemas/createMatch');
 const updateMatchSchema = require('../schemas/updateMatch');
@@ -112,36 +113,41 @@ tags: ['api'],
       },
   plugins: {
             'hapi-swagger': {
-              //security: [{ 'token': [] }],
                 responses: {
                     '400': {
                         description: 'BadRequest'
                     },
                     '200':{ 
                       description: 'Success'
+                    },
+                    '404':{
+                      description: 'NotFound'
                     }
                 },
                 payloadType: 'form'
             }
         },
     handler: (req, res) => {
-      Match
-        .findById(req.params.id)
-        .select('-_id domicile exterieur bets')
-        .populate({path: 'bets', select: '-__v'})
+      Bet
+        //.findById(req.params.id)
+        .find({"match" : req.params.id })
+        //.select('-_id domicile exterieur bets')
+        .select('-__v -match')
+        //.populate({path: 'bets', select: '-__v'})
         .exec(function(err, bets){
-            if(!err) {
-        return res(bets);
+            if(err) {
+            return res(Boom.badRequest(err)); // 400 error
       }
-    return res(Boom.badImplementation(err)); // 500 error
+            if(!bets.length){
+              return res(Boom.notFound('There are no bets for this match')); // 404 error
+            }
+            return res(bets);; 
 });   
         
     },
     // Add authentication to this route
-    // The user must have a scope of `admin`
     auth: {
-      strategy: 'token',
-      //scope: ['admin']
+      strategy: 'token'
     },
 };
 
@@ -178,11 +184,9 @@ exports.create = {
     });
     console.log(datelimite);
     
-    //match.update(match.limite, datelimite);
   },
   auth: {
-      strategy: 'token',
-      //scope :["admin"]
+      strategy: 'token'
 
     }
 };
@@ -200,6 +204,9 @@ exports.update = {
                     },
                     '200':{ 
                       description: 'Success'
+                    },
+                    '404':{
+                      description: 'NotFound'
                     }
                 },
                 payloadType: 'form'
@@ -217,18 +224,18 @@ exports.update = {
   },
   handler: function (request, reply) {
     Match.findByIdAndUpdate(request.params.id , request.payload, function (err, match) {
-      if (!err) {
-            return reply(match); // HTTP 201
-      
+      if (err) {
+
+            return reply(Boom.badRequest('Could not update the match')); //400 error
       }
-      else{ 
-        return reply(Boom.badImplementation(err)); // 500 error
+      if (!match.length){ 
+        return reply(Boom.notFound('The match you want to update does not exist!')); // 404 error
       }
+      return reply('The changes were successfully added'); // HTTP 200
     });
   },
   auth: {
-      strategy: 'token',
-      //scope :["admin"]
+      strategy: 'token'
 
     }
 };
@@ -256,6 +263,9 @@ exports.remove = {
                     },
                     '200':{ 
                       description: 'Success'
+                    },
+                    '404':{
+                      description: 'NotFound'
                     }
                 },
                 payloadType: 'form'
@@ -265,17 +275,16 @@ exports.remove = {
     Match.findByIdAndRemove(request.params.id , function (err, match) {
       if (!err && match) {
         match.remove();
-        return reply({ message: "Match deleted successfully"});
+        return reply({ message: "Match deleted successfully"}); //HTTP 200
       }
-      if (!err) {
-        return reply(Boom.notFound()); //HTTP 404
+      if (!match) {
+        return reply(Boom.notFound('The match you want to delete does not exist')); //404 error
       }
-      return reply(Boom.badRequest("Could not delete match"));
+      return reply(Boom.badRequest("Could not delete match")); //400 error
     });
   },
   auth: {
-      strategy: 'token',
-      //scope :["admin"]
+      strategy: 'token'
 
     }
 };

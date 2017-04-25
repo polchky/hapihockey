@@ -36,6 +36,9 @@ module.exports = {
                     },
                     '200':{ 
                       description: 'Success'
+                    },
+                    '404':{
+                      description: 'NotFound'
                     }
                 },
                 payloadType: 'form'
@@ -49,7 +52,10 @@ module.exports = {
         .select('-__v -bets')
         .exec((err, users) => {
           if (err) {
-            throw Boom.badRequest(err);
+            return  res(Boom.badRequest(err)); //400 error
+          }
+          if(!users){
+            return res(Boom.notFound('The user does not exist!')); //404 error
           }
 
           return res(users);
