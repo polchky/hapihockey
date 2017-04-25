@@ -43,12 +43,12 @@ exports.getAll = {
          .exec(function (err, match) {
       
         if (err) {
-            return reply(Boom.badRequest(err))  ;
+            return reply(Boom.badRequest(err))  ; //400 error
           }
           if (!match.length) {
-            return reply(Boom.notFound('All the matchs are finished, you can not bet on them!'));
+            return reply(Boom.notFound('All the matchs are finished, you can not bet on them!')); //404 error
           }
-          return reply(match);
+          return reply(match); // HTTP 200
     });
   },
   
@@ -68,6 +68,9 @@ exports.getOne = {
                     },
                     '200':{ 
                       description: 'Success'
+                    },
+                    '404':{
+                      description: 'NotFound'
                     }
                 },
                 payloadType: 'form'
@@ -87,10 +90,13 @@ exports.getOne = {
       },
   handler: function (request, reply) {
     Match.findById(request.params.id , function (err, match) {
-      if (!err) {
-        return reply(match);
+      if (err) {
+        return reply(Boom.badRequest(err)); // 400 error
       }
-      return reply(Boom.badImplementation(err)); // 500 error
+      if(!match){
+        return reply(Boom.notFound('The match does not exist!')) //404 error
+      }
+      return reply(match); // HTTP 200
     });
   }
 };
@@ -119,21 +125,29 @@ tags: ['api'],
                     },
                     '200':{ 
                       description: 'Success'
+                    },
+                    '404':{
+                      description: 'NotFound'
                     }
                 },
                 payloadType: 'form'
             }
         },
     handler: (req, res) => {
-      Match
-        .findById(req.params.id)
-        .select('-_id domicile exterieur bets')
-        .populate({path: 'bets', select: '-__v'})
+      Bet
+        //.findById(req.params.id)
+        .find({"match" : req.params.id })
+        //.select('-_id domicile exterieur bets')
+        .select('-__v -match')
+        //.populate({path: 'bets', select: '-__v'})
         .exec(function(err, bets){
-            if(!err) {
-        return res(bets);
+            if(err) {
+        return res(Boom.badRequest(err)); //400 error
       }
-    return res(Boom.badImplementation(err)); // 500 error
+      if(!bets.length){
+        return res(Boom.notFound('There are no bets for this match')); // 404 error
+      }
+    return res(bets); //HTTP 200 
 });   
         
     },
@@ -168,7 +182,7 @@ exports.create = {
       if (!err) {
         return reply(match).created('/match/' + match._id); // HTTP 201
       }
-      return reply(Boom.badImplementation(err)); // 500 error
+      return reply(Boom.badRequest(err)); // 400 error
     });
     console.log(datelimite);
     
@@ -188,6 +202,9 @@ exports.update = {
                     },
                     '200':{ 
                       description: 'Success'
+                    },
+                    '404':{
+                      description: 'NotFound'
                     }
                 },
                 payloadType: 'form'
@@ -205,13 +222,14 @@ exports.update = {
   },
   handler: function (request, reply) {
     Match.findByIdAndUpdate(request.params.id , request.payload, function (err, match) {
-      if (!err) {
-
-             return reply('The changes were successfully added'); // HTTP 200
-      
+      if (err) {
+        return reply(Boom.badRequest(err)); //400 error
+      }
+      if(!match){
+        return reply(Boom.notFound('The match you want to update does not exist!')); //404 error
       }
       else{ 
-        return reply(Boom.badImplementation(err)); // 500 error
+        return reply('The changes were successfully added'); // HTTP 200
       }
     });
   }
@@ -248,11 +266,11 @@ exports.remove = {
   handler: function (request, reply) {
     Match.findByIdAndRemove(request.params.id , function (err, match) {
       if (!err && match) {
-        match.remove();
+        //match.remove();
         return reply({ message: "Match deleted successfully"});
       }
-      if (!err) {
-        return reply(Boom.notFound()); //HTTP 404
+      if (!match) {
+        return reply(Boom.notFound('The match you want to delete does not exist!')); //HTTP 404
       }
       return reply(Boom.badRequest("Could not delete match"));
     });

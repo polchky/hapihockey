@@ -96,7 +96,7 @@ module.exports = {
         return res(totalpoints); // HTTP 200
             
       }
-    return res(Boom.badImplementation(err)); // 500 error
+    return res(Boom.badRequest(err)); // 400 error
 });     
     }  
   }

@@ -36,6 +36,9 @@ module.exports = {
                     },
                     '200':{ 
                       description: 'Success'
+                    },
+                    '404': {
+                      description: 'NotFound'
                     }
                 },
                 payloadType: 'form'
@@ -47,12 +50,15 @@ module.exports = {
         .findById(req.params.id)
         // Deselect the bets and version fields
         .select('-__v -bets')
-        .exec((err, users) => {
+        .exec((err, user) => {
           if (err) {
-            throw Boom.badRequest(err);
+            return  res(Boom.badRequest(err)); // 400 error
+          }
+          if(!user){
+            return res(Boom.notFound('The user does not exist!')); // 404 error
           }
 
-          return res(users);
+          return res(user); // HTTP 200
         });
     },
   

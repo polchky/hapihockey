@@ -40,7 +40,7 @@ exports.getAll = {
         .select('-__v ')
         .exec(function (err, bet) {
       if (err) {
-        return reply(Boom.badRequest(err)); //400 error
+        return reply(Boom.badRequest('Could not get the bet list')); //400 error
       }
       if(!bet.length){
           return reply(Boom.notFound('There are no bets')) //404 error
@@ -81,7 +81,7 @@ exports.create = {
       if (!err) {
         return reply(bet).created('/bet/' + bet._id); // HTTP 201
       }
-      return reply(Boom.badImplementation(err)); // 500 error
+      return reply(Boom.badRequest('Could not create the bet')); // 404 error
     });
 
             
@@ -89,7 +89,7 @@ exports.create = {
         
             $push: {bets: bet}, function (err, user) {
                 if (!err){
-                    return reply(user); // HTTP 201
+                    return reply(user); // HTTP 200
                 }
                 return reply(Boom.badImplementation(err)); // 500 error
             }
@@ -105,7 +105,7 @@ exports.create = {
             
             $push: {bets: bet}, function (err, match) {
                 if (!err){
-                    return reply(match); // HTTP 201
+                    return reply(match); // HTTP 200
                 }
                 return reply(Boom.badImplementation(err)); // 500 error
             }
@@ -133,7 +133,10 @@ exports.getOne = {
                         description: 'BadRequest'
                     },
                     '200':{ 
-                      description: 'Success'
+                        description: 'Success'
+                    },
+                    '404':{
+                        description: 'NotFound'
                     }
                 },
                 payloadType: 'form'
@@ -153,10 +156,14 @@ exports.getOne = {
       },
   handler: function (request, reply) {
     Bet.findById(request.params.bet_id, function (err, bet) {
-      if (!err) {
-        return reply(bet);
+      if (err) {
+        return reply(Boom.badRequest('Could not get the bet'))
       }
-      return reply(Boom.badImplementation(err)); // 500 error
+      if(!bet){
+          return reply(Boom.notFound('The bet does not exist!'))
+      }
+
+      return reply(bet);
     });
   }
 };
@@ -174,7 +181,10 @@ tags: ['api'],
                         description: 'BadRequest'
                     },
                     '200':{ 
-                      description: 'Success'
+                        description: 'Success'
+                    },
+                    '404':{
+                        description: 'NotFound'
                     }
                 },
                 payloadType: 'form'
@@ -194,12 +204,14 @@ params: {
   },
   handler: function (request, reply) {
     Bet.findByIdAndUpdate(request.params.bet_id , request.payload, function (err, bet) {
-      if (!err) {
-            return reply('The changes were successfully added'); // HTTP 200
-      
+      if (err) {
+            return reply(Boom.badRequest(err)) //400 error
+      }
+      if(!bet){
+          return reply(Boom.notFound('the bet you want to update does not exist!')) //404 error
       }
       else{ 
-        return reply(Boom.badImplementation(err)); // 500 error
+        return reply('The changes were successfully added'); // HTTP 200
       }
     });
     
@@ -240,8 +252,8 @@ exports.remove = {
       if (!err && bet) {
         return reply({ message: "Bet deleted successfully"});
       }
-      if (!err) {
-        return reply(Boom.notFound()); //HTTP 404
+      if (!bet) {
+        return reply(Boom.notFound('The bet you want to delete does not exist!')); //HTTP 404
       }
       return reply(Boom.badRequest("Could not delete bet"));
     });

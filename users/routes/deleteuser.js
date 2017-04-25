@@ -24,7 +24,7 @@ module.exports = {
 
   plugins: {
             'hapi-swagger': {
-              //security: [{ 'token': [] }],
+
                 responses: {
                     '400': {
                         description: 'BadRequest'
@@ -39,7 +39,6 @@ module.exports = {
     handler: (req, res) => {
       User.findByIdAndRemove(req.params.id , function (err, user) {
       if (!err && user) {
-        //match.remove();
         return res({ message: "User deleted successfully"});
       }
       if (!err) {
