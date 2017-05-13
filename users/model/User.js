@@ -3,7 +3,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const Bet = require('../../bets/model/Bet');
-const deepPopulate = require('mongoose-deep-populate')(mongoose);
 
 
 const userModel = new Schema({
@@ -15,6 +14,5 @@ const userModel = new Schema({
   points: {type: Number, min:0, defaultsTo: 0}
 });
 
-userModel.plugin(deepPopulate);
 
 module.exports = mongoose.model('User', userModel);

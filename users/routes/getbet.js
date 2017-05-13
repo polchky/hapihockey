@@ -34,24 +34,22 @@ module.exports = {
                     '200':{ 
                         description: 'Success'
                     },
-                    '404':{
-                        description: 'NotFound'
-                    }
+                   
                 },
                 payloadType: 'form'
             }
         },
     handler: (req, res) => {
         Bet
-        .find({"user": req.params.id})
+        .find({"user": req.params.id, "closed": false})
         .select('-password -user -admin -__v')
-        .populate({path: 'match', select: 'domicile exterieur date'})
+        //.populate({path: 'match', select: 'domicile exterieur date'})
         .exec(function(err, bets){
             if(err) {
                 return res(Boom.badRequest(err)); //400 error
       }
             if(!bets.length){
-                return res(Boom.notFound('The user has no bets!')); // 404 error
+                return res('The user has no current bets!'); 
             }
             return res(bets);
 });   

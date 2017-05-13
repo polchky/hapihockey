@@ -13,7 +13,7 @@ module.exports = {
 
   plugins: {
             'hapi-swagger': {
-              //security: [{ 'token': [] }],
+     
                 responses: {
                     '400': {
                         description: 'BadRequest'
@@ -21,9 +21,7 @@ module.exports = {
                     '200':{ 
                       description: 'Success'
                     },
-                    '404':{
-                      description: 'NotFound'
-                    }
+                    
                 },
                 payloadType: 'form'
             }
@@ -39,7 +37,7 @@ module.exports = {
             return res(Boom.badRequest(err)); //400 error
           }
           if (!users.length) {
-            return res(Boom.notFound('No users found!')); //404 error
+            return res('No users found!'); 
           }
           return res(users);
         })

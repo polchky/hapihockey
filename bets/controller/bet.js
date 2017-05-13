@@ -25,9 +25,6 @@ exports.getAll = {
                     '400': {
                         description: 'BadRequest'
                     },
-                    '404':{
-                        description: 'NotFound'
-                    }
                    
                 },
                 payloadType: 'form'
@@ -43,9 +40,9 @@ exports.getAll = {
         return reply(Boom.badRequest('Could not get the bet list')); //400 error
       }
       if(!bet.length){
-          return reply(Boom.notFound('There are no bets')) //404 error
+          return reply('There are no bets') //HTTP 200
       }
-      return reply(bet); 
+      return reply(bet); //HTTP 200
     })
   },
   
@@ -74,14 +71,15 @@ exports.create = {
     payload: createBetSchema,
   },
   handler: function (request, reply) {
-      const today = new Date().getTime();
-       var bet = new Bet(request.payload);
+     // const today = new Date().getTime();
+       var bet = new Bet({scoreDom : request.payload.scoreDom, scoreExt: request.payload.scoreExt,
+           matchId: request.payload.matchId, userId:request.payload.userId, closed : false });
        //console.log(request.payload.user);
        bet.save(function (err, bet) {
       if (!err) {
         return reply(bet).created('/bet/' + bet._id); // HTTP 201
       }
-      return reply(Boom.badRequest('Could not create the bet')); // 404 error
+      return reply(Boom.badRequest('Could not create the bet')); // 400 error
     });
 
             
@@ -203,15 +201,28 @@ params: {
 
   },
   handler: function (request, reply) {
-    Bet.findByIdAndUpdate(request.params.bet_id , request.payload, function (err, bet) {
+    Bet.findById(request.params.bet_id , function (err, bet) {
       if (err) {
             return reply(Boom.badRequest(err)) //400 error
       }
       if(!bet){
           return reply(Boom.notFound('the bet you want to update does not exist!')) //404 error
       }
+      if(bet.closed == true){
+          return reply('The bet you want to update is already closed')
+      }
       else{ 
-        return reply('The changes were successfully added'); // HTTP 200
+
+          Bet.findByIdAndUpdate(request.params.bet_id, request.payload,function (err, bet) {
+                if (err) {
+            return reply(Boom.badRequest(err)) //400 error
+      }
+
+            return reply('The changes were successfully added'); // HTTP 200
+
+
+          });
+          
       }
     });
     
@@ -229,7 +240,7 @@ exports.remove = {
 
           bet_id : Joi.objectId()
                   .required()
-                  .description('the ID of the match to fetch')
+                  .description('the ID of the bet to fetch')
 
         }
   },

@@ -23,9 +23,6 @@ exports.getAll = {
                    '200':{ 
                       description: 'List of matchs'
                     },
-                    '404': {
-                        description: 'NotFound'
-                    },
                     '400':{
                       description: 'BadRequest'
                     }
@@ -46,7 +43,7 @@ exports.getAll = {
             return reply(Boom.badRequest(err))  ; //400 error
           }
           if (!match.length) {
-            return reply(Boom.notFound('All the matchs are finished, you can not bet on them!')); //404 error
+            return reply('All the matchs are finished, you can not bet on them!');
           }
           return reply(match); // HTTP 200
     });
@@ -125,9 +122,6 @@ tags: ['api'],
                     },
                     '200':{ 
                       description: 'Success'
-                    },
-                    '404':{
-                      description: 'NotFound'
                     }
                 },
                 payloadType: 'form'
@@ -145,7 +139,7 @@ tags: ['api'],
         return res(Boom.badRequest(err)); //400 error
       }
       if(!bets.length){
-        return res(Boom.notFound('There are no bets for this match')); // 404 error
+        return res('There are no bets for this match'); 
       }
     return res(bets); //HTTP 200 
 });   

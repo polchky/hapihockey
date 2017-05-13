@@ -13,9 +13,9 @@ const createBetSchema = Joi.object({
 
             //points: Joi.number().integer().optional(),
 
-            match: Joi.objectId().required(),
+            matchId: Joi.objectId().required(),
 
-            user: Joi.objectId().required()
+            userId: Joi.objectId().required()
 });
 
 module.exports = createBetSchema;

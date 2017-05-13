@@ -7,9 +7,9 @@ Joi.objectId = require('joi-objectid')(Joi);
 //const limite = new Date(dateString);
 
 const updateBetSchema = Joi.object({
-            scoreDom: Joi.number().integer().required(),
+            scoreDom: Joi.number().integer().required().description('score of domicile team'),
 
-            scoreExt: Joi.number().integer().required(),
+            scoreExt: Joi.number().integer().required().description('score of exterior team'),
 
             //score : Joi.number().integer().optional(),
 
