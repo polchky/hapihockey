@@ -24,9 +24,7 @@ exports.getAll = {
                    '200':{ 
                       description: 'List of matchs'
                     },
-                    '404': {
-                        description: 'NotFound'
-                    },
+                    
                     '400':{
                       description: 'BadRequest'
                     }
@@ -47,9 +45,9 @@ exports.getAll = {
             return reply(Boom.badRequest(err)); //400 error
           }
           if (!match.length) {
-            return reply(Boom.notFound('All the matchs are finished, you can not bet on them!')); //404 error
+            return reply('All the matchs are finished, you can not bet on them!'); //HTTP 200
           }
-          return reply(match);
+          return reply(match); // HTTP 200
     });
   },
   
@@ -69,6 +67,9 @@ exports.getOne = {
                     },
                     '200':{ 
                       description: 'Success'
+                    },
+                    '404' :{
+                      description: 'NotFound'
                     }
                 },
                 payloadType: 'form'
@@ -88,10 +89,14 @@ exports.getOne = {
       },
   handler: function (request, reply) {
     Match.findById(request.params.id , function (err, match) {
-      if (!err) {
-        return reply(match);
+      if (err) {
+        return reply(Boom.badRequest(err)); // 400 error
+        
       }
-      return reply(Boom.badImplementation(err)); // 500 error
+      if(!match){
+        return reply(Boom.notFound('The match does not exist!')) //404 error
+      }
+      return reply(match); //HTTP 200
     });
   }
 };

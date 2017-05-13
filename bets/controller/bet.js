@@ -24,9 +24,6 @@ exports.getAll = {
                     },
                     '400': {
                         description: 'BadRequest'
-                    },
-                    '404': {
-                        description: 'NotFound'
                     }
                    
                 },
@@ -43,9 +40,9 @@ exports.getAll = {
         return reply(Boom.badRequest(err)); //400 error
       }
       if(!bet.length){
-          return reply(Boom.notFound('There are no bets')) //404 error
+          return reply('There are no bets') //HTTP 200
       }
-      return reply(bet);
+      return reply(bet); // HTTP 200
     })
   },
     // Add authentication to this route

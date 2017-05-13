@@ -13,14 +13,12 @@ module.exports = {
 
   plugins: {
             'hapi-swagger': {
-              //security: [{ 'token': [] }],
+              
                 responses: {
                     '400': {
                         description: 'BadRequest'
                     },
-                    '404':{
-                        description: 'NotFound'
-                    },
+                  
                     '200':{ 
                       description: 'Success'
                     }
@@ -39,9 +37,9 @@ module.exports = {
             return res(Boom.badRequest(err)); //400 error
           }
           if (!users.length) {
-            return res(Boom.notFound('No users found!')); //404 error
+            return res('No users found!'); //HTTP 200
           }
-          return res(users);
+          return res(users); // HTTP 200
         })
     },
     // Add authentication to this route

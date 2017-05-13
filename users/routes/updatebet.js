@@ -53,8 +53,19 @@ params: {
       if(!bet){
             return reply(Boom.notFound('The bet you want to update does not exist'))
       }
+      if(bet.closed == true){
+          return reply('The bet you want to update is already closed')
+      }
       else{ 
-        return reply('The changes were successfully added'); // HTTP 200
+        Bet.findByIdAndUpdate(request.params.bet_id, request.payload,function (err, bet) {
+                if (err) {
+            return reply(Boom.badRequest(err)) //400 error
+      }
+
+            return reply('The changes were successfully added'); // HTTP 200
+
+
+          });
       }
     });
     

@@ -13,7 +13,7 @@ const createBetSchema = Joi.object({
 
             //points: Joi.number().integer().optional(),
 
-            match: Joi.objectId().required().description('Id of the match'),
+            matchId: Joi.objectId().required().description('Id of the match'),
 
             //user: Joi.objectId().required()
 });

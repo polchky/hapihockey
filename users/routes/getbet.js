@@ -45,7 +45,7 @@ module.exports = {
       Bet
         .find({"user": req.params.id})
         .select('-password -user -admin -__v')
-        .populate({path: 'match', select: 'domicile exterieur date'})
+        //.populate({path: 'match', select: 'domicile exterieur date'})
         .exec(function(err, bets){
             if(err) {
         return res(Boom.badRequest(err)); // 400 error
